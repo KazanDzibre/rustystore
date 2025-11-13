@@ -1,5 +1,6 @@
 mod store;
 
+use arboard::Clipboard;
 use std::io::{self, Write};
 use store::{KvStore, Storage};
 
@@ -10,6 +11,8 @@ fn main() {
         Ok(store) => store,
         Err(_) => KvStore::new(),
     };
+
+    let mut clipboard = Clipboard::new().unwrap();
     let stdin = io::stdin();
 
     loop {
@@ -34,6 +37,11 @@ fn main() {
             "get" if parts.len() == 2 => {
                 if let Some(val) = kv.get(parts[1]) {
                     println!("{}", val);
+
+                    // Copy to clipboard
+                    clipboard.set_text(val.clone()).unwrap();
+
+                    println!("Password copied to clipboard!");
                 } else {
                     println!("Key not found");
                 }
