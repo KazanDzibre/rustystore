@@ -1,5 +1,5 @@
 1. add logging system instead of prints
-2. WRITE A README
+2. WRITE A README [y]
 3. maybe add some encription cause now we have passwords saved in plaintext to a json file
 4. dispalce code from main method
-5. fix it to work globally
+5. fix it to work globally [y]

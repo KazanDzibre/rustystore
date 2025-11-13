@@ -11,6 +11,7 @@ fn get_store_file() -> PathBuf {
     path.push("rustystore");
     fs::create_dir_all(&path).unwrap();
     path.push("kvstore.json");
+
     path
 }
 
