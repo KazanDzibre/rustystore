@@ -1,3 +1,4 @@
+pub mod crypto;
 pub mod kvstore;
 pub mod storage;
 

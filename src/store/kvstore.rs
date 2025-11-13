@@ -1,3 +1,4 @@
+use super::crypto::{decrypt, encrypt};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
@@ -14,11 +15,16 @@ impl KvStore {
     }
 
     pub fn add(&mut self, key: String, value: String) {
-        self.store.insert(key, value);
+        let encrypted = encrypt(value.as_bytes());
+        self.store.insert(key, encrypted);
     }
 
-    pub fn get(&self, key: &str) -> Option<&String> {
-        self.store.get(key)
+    pub fn get(&self, key: &str) -> Option<String> {
+        self.store.get(key).and_then(|enc| {
+            decrypt(enc) // Result<Vec<u8>, &str>
+                .ok() // convert to Option<Vec<u8>>
+                .and_then(|bytes| String::from_utf8(bytes).ok())
+        })
     }
 
     pub fn remove(&mut self, key: &str) -> bool {

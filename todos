@@ -1,5 +1,8 @@
-1. add logging system instead of prints
+1. add logging system instead of prints [y]
 2. WRITE A README [y]
-3. maybe add some encription cause now we have passwords saved in plaintext to a json file
-4. dispalce code from main method
+3. maybe add some encription cause now we have passwords saved in plaintext to a json file [y]
+4. dispalce code from main method [y]
 5. fix it to work globally [y]
+6. create master password
+7. main method code could be displaced further
+8. add logging into the crypto.rs
