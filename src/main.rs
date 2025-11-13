@@ -1,15 +1,26 @@
 mod store;
 
 use arboard::Clipboard;
+use std::fs;
 use std::io::{self, Write};
+use std::path::PathBuf;
 use store::{KvStore, Storage};
 
-const STORE_FILE: &str = "kvstore.json";
+fn get_store_file() -> PathBuf {
+    let mut path = dirs::data_dir().expect("Could not find data directory"); // $XDG_DATA_HOME or ~/.local/share
+    path.push("rustystore");
+    fs::create_dir_all(&path).unwrap();
+    path.push("kvstore.json");
+    path
+}
 
 fn main() {
-    let mut kv = match KvStore::load(STORE_FILE) {
-        Ok(store) => store,
-        Err(_) => KvStore::new(),
+    let store_file = get_store_file();
+
+    let mut kv = if store_file.exists() {
+        KvStore::load(store_file.to_str().unwrap()).unwrap_or_else(|_| KvStore::new())
+    } else {
+        KvStore::new()
     };
 
     let mut clipboard = Clipboard::new().unwrap();
@@ -30,7 +41,7 @@ fn main() {
         match parts[0] {
             "add" if parts.len() == 3 => {
                 kv.add(parts[1].to_string(), parts[2].to_string());
-                if let Err(e) = kv.save(STORE_FILE) {
+                if let Err(e) = kv.save(store_file.to_str().unwrap()) {
                     println!("Error saving: {}", e);
                 }
             }
@@ -48,7 +59,7 @@ fn main() {
             }
             "remove" if parts.len() == 2 => {
                 if kv.remove(parts[1]) {
-                    if let Err(e) = kv.save(STORE_FILE) {
+                    if let Err(e) = kv.save(store_file.to_str().unwrap()) {
                         println!("Error saving: {}", e);
                     }
                     println!("Deleted");
