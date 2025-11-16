@@ -27,6 +27,10 @@ impl KvStore {
         })
     }
 
+    pub fn list(&self) -> Vec<String> {
+        self.store.keys().cloned().collect()
+    }
+
     pub fn remove(&mut self, key: &str) -> bool {
         self.store.remove(key).is_some()
     }

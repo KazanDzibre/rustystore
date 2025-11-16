@@ -6,3 +6,6 @@
 6. create master password
 7. main method code could be displaced further
 8. add logging into the crypto.rs
+9. make a minimal database in rust to store the passwords, move on from json file
+10. merge with rofi to have frontend
+

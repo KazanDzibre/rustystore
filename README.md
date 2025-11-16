@@ -1,81 +1,110 @@
 Rustystore
 
-Rustystore is a simple, secure CLI key-value store written in Rust. It allows you to store secrets (like passwords or API tokens) and quickly retrieve them. It supports JSON-based persistence and automatically copies values to the clipboard.
+Rustystore is a simple, secure CLI key-value store written in Rust, designed for fast access to secrets like passwords or API tokens. Its main power comes from Rofi integration, allowing you to quickly search and copy keys to your clipboard with a single hotkey.
 
 Features
+
+Rofi integration for instant access to stored keys
 
 Add, get, and remove key-value pairs
 
 Persistent storage in JSON format (~/.local/share/rustystore/kvstore.json)
 
-Clipboard integration (copy secrets automatically on get)
+Clipboard integration (automatically copies values on get)
 
 Simple CLI interface
 
-Cross-platform paths via dirs crate
+Cross-platform paths via the dirs crate
 
 Installation
 
-1. Clone the repository
-   git clone https://github.com/KazanDzibre/rustystore.git
-   cd rustystore
+Clone the repository:
 
-2. Build the project
-   cargo build --release
+git clone https://github.com/KazanDzibre/rustystore.git
+cd rustystore
+
+Build the project:
+
+cargo build --release
 
 The executable will be in:
 
 target/release/rustystore
 
-3. Optional: Make it globally available
-
-Create a symlink to /usr/local/bin:
+Optional: Make it globally available
 
 sudo ln -s $(pwd)/target/release/rustystore /usr/local/bin/rustystore
 
-Now you can run rustystore from anywhere.
+CLI Usage (Without Rofi)
 
-Usage
-
-Run the CLI:
+Run the interactive CLI:
 
 rustystore
 
-Commands
+Commands:
 
-Add a key
+Add a key: add <key> <value>
 
-> add <key> <value>
+Get a key: get <key> (copies value to clipboard)
 
-Example:
+Remove a key: rm <key>
 
-> add ghtoken token
+List all keys: list
 
-Get a key
+Quit: q
 
-Automatically copies the value to the clipboard:
+Rofi Integration (Recommended)
 
-> get <key>
+Rofi allows you to select a key from a popup menu and automatically copy its value to your clipboard.
 
-Example:
+1. Install Rofi
 
-> get ghtoken
-> token
-> Password copied to clipboard!
+On Ubuntu/Debian:
 
-Remove a key
+sudo apt install rofi
 
-> remove <key>
+On Arch Linux:
 
-Quit
+sudo pacman -S rofi
 
-> q
+2. Create the helper script
+
+For example: ~/.local/bin/rustystore-rofi.sh
+
+#!/usr/bin/env bash
+
+# Get list of keys
+
+keys=$(rustystore list)
+
+# Show Rofi menu
+
+selected_key=$(echo "$keys" | rofi -dmenu -p "Select key:")
+
+# Copy selected key's value
+
+if [ -n "$selected_key" ]; then
+rustystore get "$selected_key"
+    notify-send "RustyStore" "Value for '$selected_key' copied to clipboard"
+fi
+
+Make it executable:
+
+chmod +x ~/.local/bin/rustystore-rofi.sh
+
+3. Bind to a hotkey in your window manager
+
+Example for i3 config (~/.config/i3/config):
+
+# Open RustyStore Rofi menu
+
+bindsym $mod+Shift+p exec --no-startup-id ~/.local/bin/rustystore-rofi.sh
+
+Reload i3 configuration (Mod+Shift+R) and press your hotkey to bring up RustyStore via Rofi.
 
 Storage Location
 
-The JSON file is stored in your data directory according to the OS:
-
-Linux: $XDG_DATA_HOME/rustystore/kvstore.json (defaults to ~/.local/share/rustystore/kvstore.json)
+Linux: ~/.local/share/rustystore/kvstore.json
 
 macOS: ~/Library/Application Support/rustystore/kvstore.json
 
@@ -83,32 +112,12 @@ Windows: %APPDATA%\rustystore\kvstore.json
 
 Dependencies
 
-serde
+serde, serde_json — JSON serialization/deserialization
 
-- serde_json — serialization/deserialization of the JSON store
+arboard — clipboard integration
 
-arboard
-— clipboard integration
-
-dirs
-— cross-platform system paths
-
-Add these to your Cargo.toml if not already included:
-
-[dependencies]
-serde = { version = "1.0", features = ["derive"] }
-serde_json = "1.0"
-arboard = "3"
-dirs = "5"
-
-Notes
-
-Each user has their own store; no root permissions are required.
-
-Clipboard contents may require a persistent clipboard manager on Linux/X11.
-
-Currently uses JSON; in the future, the storage backend can be swapped (trait-based design).
+dirs — cross-platform system paths
 
 License
 
-MIT License. See LICENSE file.
+Rustystore is licensed under GNU GPL v3.0. See LICENSE for details.
