@@ -1,75 +1,76 @@
 Rustystore
 
-Rustystore is a simple, secure CLI key-value store written in Rust, designed for fast access to secrets like passwords or API tokens. Its main power comes from Rofi integration, allowing you to quickly search and copy keys to your clipboard with a single hotkey.
+Rustystore is a secure, minimalistic CLI key-value store written in Rust. It’s designed for fast retrieval of secrets (passwords, tokens, etc.) and integrates cleanly with Rofi for instant, hotkey-based access.
+
+Rofi integration is the recommended way to use Rustystore, but the tool works fully without it.
 
 Features
 
-Rofi integration for instant access to stored keys
+Rofi integration for fast key search and clipboard copy
 
 Add, get, and remove key-value pairs
 
-Persistent storage in JSON format (~/.local/share/rustystore/kvstore.json)
+Automatic clipboard copying on get
 
-Clipboard integration (automatically copies values on get)
+JSON-based persistent storage
 
-Simple CLI interface
+Cross-platform data directories (dirs crate)
 
-Cross-platform paths via the dirs crate
+Lightweight, dependency-minimal CLI
 
 Installation
 
-Clone the repository:
+Clone and build:
 
 git clone https://github.com/KazanDzibre/rustystore.git
 cd rustystore
-
-Build the project:
-
 cargo build --release
 
-The executable will be in:
-
-target/release/rustystore
-
-Optional: Make it globally available
+Optional: install globally:
 
 sudo ln -s $(pwd)/target/release/rustystore /usr/local/bin/rustystore
 
-CLI Usage (Without Rofi)
+CLI Usage (No Rofi)
 
-Run the interactive CLI:
+Run:
 
 rustystore
 
 Commands:
 
-Add a key: add <key> <value>
+Command Description
+add <key> <value> Add a new key-value pair
+get <key> Get value and copy it to clipboard
+rm <key> Remove a key
+list List all keys
+q Quit
 
-Get a key: get <key> (copies value to clipboard)
+Example (generic key):
 
-Remove a key: rm <key>
-
-List all keys: list
-
-Quit: q
+add sample_key myvalue
+get sample_key
 
 Rofi Integration (Recommended)
 
-Rofi allows you to select a key from a popup menu and automatically copy its value to your clipboard.
+Rofi provides a fast popup interface for selecting stored keys and copying their values.
 
 1. Install Rofi
 
-On Ubuntu/Debian:
+Debian/Ubuntu:
 
 sudo apt install rofi
 
-On Arch Linux:
+Arch:
 
 sudo pacman -S rofi
 
-2. Create the helper script
+2. Create the Rofi helper script
 
-For example: ~/.local/bin/rustystore-rofi.sh
+Create:
+
+~/.local/bin/rustystore-rofi.sh
+
+Contents:
 
 #!/usr/bin/env bash
 
@@ -77,32 +78,38 @@ For example: ~/.local/bin/rustystore-rofi.sh
 
 keys=$(rustystore list)
 
-# Show Rofi menu
+# Show menu
 
 selected_key=$(echo "$keys" | rofi -dmenu -p "Select key:")
 
-# Copy selected key's value
+# Copy the key's value
 
 if [ -n "$selected_key" ]; then
 rustystore get "$selected_key"
-    notify-send "RustyStore" "Value for '$selected_key' copied to clipboard"
+    notify-send "Rustystore" "Value for '$selected_key' copied to clipboard"
 fi
 
-Make it executable:
+Make executable:
 
 chmod +x ~/.local/bin/rustystore-rofi.sh
 
-3. Bind to a hotkey in your window manager
+3. Bind it to a hotkey (Example: i3 Window Manager)
 
-Example for i3 config (~/.config/i3/config):
+This is an example configuration for i3. Other window managers (Sway, bspwm, Openbox, KDE, etc.) will use different keybinding systems.
 
-# Open RustyStore Rofi menu
+Add to ~/.config/i3/config:
 
 bindsym $mod+Shift+p exec --no-startup-id ~/.local/bin/rustystore-rofi.sh
 
-Reload i3 configuration (Mod+Shift+R) and press your hotkey to bring up RustyStore via Rofi.
+Reload i3:
+
+Mod+Shift+R
+
+Press the hotkey → select key in Rofi → value copied to clipboard.
 
 Storage Location
+
+Rustystore stores data in the OS-specific user data directory:
 
 Linux: ~/.local/share/rustystore/kvstore.json
 
@@ -110,14 +117,15 @@ macOS: ~/Library/Application Support/rustystore/kvstore.json
 
 Windows: %APPDATA%\rustystore\kvstore.json
 
+Each user gets their own store. No root access required.
+
 Dependencies
-
-serde, serde_json — JSON serialization/deserialization
-
-arboard — clipboard integration
-
-dirs — cross-platform system paths
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+arboard = "3"
+dirs = "5"
 
 License
 
-Rustystore is licensed under GNU GPL v3.0. See LICENSE for details.
+This project is licensed under GNU GPL v3.0.
+See the LICENSE file for details.
