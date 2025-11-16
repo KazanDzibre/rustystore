@@ -1,10 +1,10 @@
-Rustystore
+# Rustystore
 
 Rustystore is a secure, minimalistic CLI key-value store written in Rust. It’s designed for fast retrieval of secrets (passwords, tokens, etc.) and integrates cleanly with Rofi for instant, hotkey-based access.
 
 Rofi integration is the recommended way to use Rustystore, but the tool works fully without it.
 
-Features
+# Features
 
 Rofi integration for fast key search and clipboard copy
 
@@ -18,9 +18,9 @@ Cross-platform data directories (dirs crate)
 
 Lightweight, dependency-minimal CLI
 
-Installation
+# Installation
 
-Clone and build:
+## Clone and build:
 
 git clone https://github.com/KazanDzibre/rustystore.git
 cd rustystore
@@ -32,11 +32,11 @@ sudo ln -s $(pwd)/target/release/rustystore /usr/local/bin/rustystore
 
 CLI Usage (No Rofi)
 
-Run:
+## Run:
 
 rustystore
 
-Commands:
+## Commands:
 
 Command Description
 add <key> <value> Add a new key-value pair
@@ -50,7 +50,7 @@ Example (generic key):
 add sample_key myvalue
 get sample_key
 
-Rofi Integration (Recommended)
+# Rofi Integration (Recommended)
 
 Rofi provides a fast popup interface for selecting stored keys and copying their values.
 
